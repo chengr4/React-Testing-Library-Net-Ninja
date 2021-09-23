@@ -1,21 +1,47 @@
-import { render, screen } from '@testing-library/react';
-import TodoFooter from '../TodoFooter';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
+import AddInput from '../AddInput';
+
+const mockedSetTodo = jest.fn();
 
 // Describe block
-describe('TodoFooter', () => {
-  test('should render the correct amount of incomplete tasks', () => {
-    // render app into virtual DOM
-    render(<MockTodoFooter numberOfIncompleteTasks={5} />);
-    const paragraphElement = screen.getByText(/5 tasks left/i);
-    expect(paragraphElement).toBeInTheDocument();
-  });
-  
-  test('should render "task" when the number of incomplete tasks is one', () => {
-    // render app into virtual DOM
-    render(<MockTodoFooter numberOfIncompleteTasks={1} />);
-    const paragraphElement = screen.getByText(/1 task left/i);
-    expect(paragraphElement).toBeInTheDocument();
+describe('AddInput', () => {
+  test('should render input element', () => {
+    render(
+      <AddInput 
+        todo={[]}
+        setTodos={mockedSetTodo}
+      />
+    );
+    const inputElement = screen.getByPlaceholderText(/Add a new task here/i);
+    expect(inputElement).toBeInTheDocument();
   });
 
+  test('Types value and should change', () => {
+    render(
+      <AddInput 
+        todo={[]}
+        setTodos={mockedSetTodo}
+      />
+    );
+    const inputElement = screen.getByPlaceholderText(/Add a new task here/i);
+    
+    // trigger type event
+    fireEvent.change(inputElement, { target: {
+      value: "Go shopping"
+    } });
+    expect(inputElement.value).toBe("Go shopping");
+  });
+
+  test('Should have empty input when add button is clicked', () => {
+    render(
+      <AddInput
+        todo={[]}
+        setTodos={mockedSetTodo}
+      />
+    );
+    const inputElement = screen.getByPlaceholderText(/Add a new task here.../i);
+    const buttonElement = screen.getByRole("button", { name: /Add/i });
+    // trigger click event
+    expect(inputElement.value).toBe("");
+  });
 });
